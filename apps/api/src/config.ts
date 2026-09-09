@@ -16,6 +16,36 @@ function parsePort(value: string | undefined): number {
   return port;
 }
 
+function isHttpsOrigin(value: string | undefined): boolean {
+  if (!value?.trim()) return false;
+  try {
+    return new URL(value.trim()).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function railwayHttpsOrigin(value: string | undefined): string | undefined {
+  const domain = value?.trim();
+  if (!domain) return undefined;
+  try {
+    const url = new URL(domain.includes("://") ? domain : `https://${domain}`);
+    url.protocol = "https:";
+    return url.origin;
+  } catch {
+    throw new Error("RAILWAY_PUBLIC_DOMAIN must contain a valid public service domain.");
+  }
+}
+
+function selectOrigin(value: string | undefined, fallback: string): string {
+  const candidate = value?.trim();
+  if (!candidate) return fallback;
+  // In Railway production, replace stale localhost/http values with the
+  // platform-generated HTTPS domain. Explicit custom HTTPS origins still win.
+  if (isProduction && !isHttpsOrigin(candidate)) return fallback;
+  return candidate;
+}
+
 function parseOrigin(name: string, value: string | undefined, fallback: string): string {
   let url: URL;
   try {
@@ -23,7 +53,7 @@ function parseOrigin(name: string, value: string | undefined, fallback: string):
   } catch {
     throw new Error(`${name} must be a valid absolute URL.`);
   }
-  if (!['http:', 'https:'].includes(url.protocol)) {
+  if (!["http:", "https:"].includes(url.protocol)) {
     throw new Error(`${name} must use http or https.`);
   }
   if (isProduction && url.protocol !== "https:") {
@@ -57,12 +87,24 @@ const invitationSecret =
   process.env.INVITATION_SECRET?.trim() || "local-invitation-secret-change-before-production";
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN?.trim() || "";
 const telegramWebhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim() || "";
+
+const railwayOrigin = railwayHttpsOrigin(process.env.RAILWAY_PUBLIC_DOMAIN);
+if (isProduction && !railwayOrigin && !isHttpsOrigin(process.env.PUBLIC_BASE_URL)) {
+  throw new Error(
+    "Generate a Railway public domain or set PUBLIC_BASE_URL to the service's HTTPS origin.",
+  );
+}
+const publicFallback = railwayOrigin ?? "http://localhost:5173";
 const publicBaseUrl = parseOrigin(
   "PUBLIC_BASE_URL",
-  process.env.PUBLIC_BASE_URL,
-  "http://localhost:5173",
+  selectOrigin(process.env.PUBLIC_BASE_URL, publicFallback),
+  publicFallback,
 );
-const webOrigin = parseOrigin("WEB_ORIGIN", process.env.WEB_ORIGIN, publicBaseUrl);
+const webOrigin = parseOrigin(
+  "WEB_ORIGIN",
+  selectOrigin(process.env.WEB_ORIGIN, publicBaseUrl),
+  publicBaseUrl,
+);
 
 if (isProduction && paymentProvider !== "razorpay") {
   throw new Error("Production requires PAYMENT_PROVIDER=razorpay.");
@@ -80,7 +122,9 @@ if (isProduction && !telegramBotToken) {
   throw new Error("Production Telegram mode requires TELEGRAM_BOT_TOKEN.");
 }
 if (isProduction && telegramMode === "webhook" && telegramWebhookSecret.length < 16) {
-  throw new Error("Telegram webhook mode requires a TELEGRAM_WEBHOOK_SECRET of at least 16 characters.");
+  throw new Error(
+    "Telegram webhook mode requires a TELEGRAM_WEBHOOK_SECRET of at least 16 characters.",
+  );
 }
 
 export const config = {
