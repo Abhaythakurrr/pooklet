@@ -1,0 +1,29 @@
+{
+  "name": "pooklet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=@pooklet/web",
+    "dev:api": "npm run dev --workspace=@pooklet/api",
+    "build": "npm run build --workspace=@pooklet/api && npm run build --workspace=@pooklet/web",
+    "start": "node apps/api/dist/server.js",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": "22.23.2",
+    "npm": ">=10.9.0 <11"
+  },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
+  "devDependencies": {
+    "@types/node": "26.5.0",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

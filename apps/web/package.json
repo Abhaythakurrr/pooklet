@@ -1,0 +1,29 @@
+{
+  "name": "@pooklet/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/inter": "5.3.0",
+    "@pooklet/domain": "0.1.0",
+    "@react-three/fiber": "9.7.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@types/three": "0.185.4",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.2.2"
+  }
+}

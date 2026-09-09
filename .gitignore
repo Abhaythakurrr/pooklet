@@ -1,0 +1,35 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+*.log
+
+# Local environment and secret files
+.env*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+.npmrc
+secrets/
+credentials*.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Local databases and runtime state
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Tool and OS state
+.DS_Store
+.vscode/
+.idea/
+.vercel/
+.railway/

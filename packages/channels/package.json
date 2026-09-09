@@ -1,0 +1,15 @@
+{
+  "name": "@pooklet/channels",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pooklet/domain": "0.1.0"
+  }
+}
