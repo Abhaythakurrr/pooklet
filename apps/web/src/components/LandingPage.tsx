@@ -76,12 +76,12 @@ export function LandingPage() {
 
       <section className="how" id="how">
         <div className="how__visual" aria-hidden="true"><div className="paper-stack"><span>For the words<br />that matter</span><i /></div></div>
-        <div className="how__copy"><p className="object-label">Made slowly. Opened gently.</p><h2>A beginning,<br />not a dashboard.</h2><ol><li><span>01</span><div><strong>Choose the feeling</strong><p>Celebration, everyday love, or a careful apology.</p></div></li><li><span>02</span><div><strong>Put your words inside</strong><p>Answer a few thoughtful prompts. A text-only story is complete.</p></div></li><li><span>03</span><div><strong>Pay ₹10 and seal it</strong><p>Scan your unique UPI QR. After verification, your private invitation is ready.</p></div></li></ol></div>
+        <div className="how__copy"><p className="object-label">Made slowly. Opened gently.</p><h2>A beginning,<br />not a dashboard.</h2><ol><li><span>01</span><div><strong>Choose the feeling</strong><p>Celebration, everyday love, or a careful apology.</p></div></li><li><span>02</span><div><strong>Put your words inside</strong><p>Answer a few thoughtful prompts. A text-only story is complete.</p></div></li><li><span>03</span><div><strong>Pay ₹10 securely</strong><p>Razorpay verifies the payment automatically, then your private invitation is ready.</p></div></li></ol></div>
       </section>
 
       <section className="channels">
-        <p className="object-label">Make it here or make it in chat</p><h2>Web to compose.<br />Telegram to deliver.</h2><p className="channels__lede">Use the full web creator or let the Telegram bot guide each answer. After the ₹10 UPI payment is verified, the same Telegram chat receives a private cute link and a recipient QR—without scraping, cold DMs, or a messaging aggregator.</p>
-        <div className="channel-line"><span>WEB CREATOR</span><span>TELEGRAM BOT</span><span>₹10 UPI</span><span>PRIVATE LINK + QR</span></div>
+        <p className="object-label">Make it here or make it in chat</p><h2>Web to compose.<br />Telegram to deliver.</h2><p className="channels__lede">Use the full web creator or let the Telegram bot guide each answer. After Razorpay verifies the ₹10 payment, the same Telegram chat receives a private cute link and a recipient QR—without scraping, cold DMs, or a messaging aggregator.</p>
+        <div className="channel-line"><span>WEB CREATOR</span><span>TELEGRAM BOT</span><span>₹10 CHECKOUT</span><span>PRIVATE LINK + QR</span></div>
       </section>
 
       <footer><a className="brand" href="/"><span className="brand__mark">P</span><span>Pooklet</span></a><p>The environment carries the feeling.<br />Your words make it true.</p><a href="#feelings">Make one for ₹10 ↑</a></footer>

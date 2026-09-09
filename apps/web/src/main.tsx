@@ -10,6 +10,8 @@ import { App } from "./App";
 import "./styles.css";
 import "./gift-sites.css";
 
+document.documentElement.dataset.pookletApp = "ready";
+
 const root = document.getElementById("root");
 
 if (!root) {

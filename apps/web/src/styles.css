@@ -26,6 +26,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html[data-pooklet-app="ready"] { background: #f7e8ee; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--cream); }
 a { color: inherit; }
 button, input, textarea, select { font: inherit; }
