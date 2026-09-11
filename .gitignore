@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.wrangler/
+
+# Smoke-test output. Screenshots are evidence for a single run, not source.
+artefacts/
+
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example

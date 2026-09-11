@@ -1,0 +1,271 @@
+{
+  "purpose": "Provenance for third-party Agent Skills installed for this WebGL + WebXR project.",
+  "project": {
+    "concept": "Love and celebration. A realistic, natural virtual environment built as four connected zones that must share one coherent, emotionally resonant art direction.",
+    "zones": {
+      "garden": "Nature and love resonating. Owns: threejs-procedural-vegetation (trees, ivy, stylized and GPU grass, flower fields, rooted wind), threejs-procedural-fields, threejs-procedural-materials (soil, moss, wetness), threejs-atmosphere-aerial-perspective, threejs-shadow-systems, threejs-screen-space-ambient-occlusion.",
+      "cafe": "Warm interior, same resonance. Owns: threejs-procedural-architecture (shell and facade), threejs-procedural-materials (wood, ceramic, fabric), threejs-aaa-graphics-builder (world prop kits), blender-web-pipeline + substance-3d-texturing + threejs-3d-generator (furniture and props), threejs-exposure-color-grading (warm interior grade).",
+      "theater": "Images and movies, same resonance. Owns: threejs-textures (VideoTexture with SRGBColorSpace), hz-iwsdk-webxr references/performance-tips.md (XRMediaBinding quad layer -- the technique that keeps video sharp in VR instead of resampling it through the scene), threejs-bloom (emissive screen spill), threejs-audio-generator (audio synced to playback).",
+      "beach": "Ocean and shoreline, same resonance. Owns: threejs-spectral-ocean (FFT cascades, coastal breakers, wet sand, Jacobian whitecaps, caustic god rays), threejs-water-optics, threejs-atmosphere-aerial-perspective."
+    },
+    "crossCutting": {
+      "artDirectionCoherence": "threejs-aaa-graphics-builder (art-direction critique + 10-category visual scorecard) is the tool for keeping one mood across all four zones. Pair with frontend-design and the built-in interfaces-that-feel / aesthetic-usability / peak-end-rule skills for the emotional read.",
+      "zoneTransitions": "threejs-camera-direction + gsap-timeline.",
+      "ambience": "threejs-audio-generator -- per-zone beds (garden birdsong, cafe murmur, surf, celebration music). Note: its generation path depends on the ElevenLabs API; the Web Audio integration and manifest guidance is usable without it.",
+      "comfortAndSpatialUx": "hz-immersive-designer (comfort, spatial layout, XR accessibility).",
+      "frameBudget": "threejs-debug-profiler (draw calls, triangles, texture and shader cost) + threejs-visual-validation + threejs-qa-release.",
+      "openRisk": "See blockers.gpuAndVrBudget. Four photoreal zones at 72-90Hz stereo is the central engineering tension of this project, not a detail."
+    }
+  },
+  "installedAt": "2026-09-07",
+  "installPaths": [".kiro/skills", ".claude/skills"],
+  "skillCount": 45,
+  "fileCount": 165,
+  "alsoInstalledUserLevel": {
+    "paths": ["~/.kiro/skills", "~/.claude/skills"],
+    "what": "The 24-skill threejs-awesome-graphics-agent-skills pack (see sources below).",
+    "whyNotInRepo": "The pack is 68M, mostly binary example assets (jpg/webp/glb). Committing it twice (once per agent dir) would add ~136M of poorly-compressing binaries to git history. It is general three.js graphics technique rather than project-specific config, so user level is the correct scope and it stays available in every project.",
+    "toVendorItIntoTheRepoInstead": "rsync -a ~/.kiro/skills/threejs-{atmosphere-aerial-perspective,bloom,camera-direction,exposure-color-grading,image-pipeline,parallax-occlusion-mapping,precipitation-surfaces,procedural-*,raymarched-space-effects,screen-space-ambient-occlusion,shadow-systems,skill-router,spectral-ocean,temporal-surfaces,visual-validation,volumetric-clouds,water-optics} .kiro/skills/ && rsync -a --delete .kiro/skills/ .claude/skills/"
+  },
+  "note": "Installed by cloning the source repos and copying skills/<name>/ verbatim. The `npx skills` CLI requires Node >=20.17; this machine runs Node 18.19.1, so the CLI was bypassed.",
+  "directoryConventionNote": "Agent Skills are read from per-agent directories. `.kiro/skills` (Kiro) and `.claude/skills` (Claude Code) are the two in use here; `.agents/skills` and `.agent/skills` are other common ones. There is NO `.unity/skills` convention -- Unity is a game engine and does not read Agent Skills. Unity-related skills therefore live in the agent directories above, same as everything else.",
+  "dualLocation": {
+    "why": "`.kiro/skills` is read by Kiro, `.claude/skills` by Claude Code. Both are project-scoped so they commit with the repo.",
+    "state": "The two trees are byte-identical (45 skills / 165 files each, verified with `diff -r`).",
+    "keepInSync": "After editing or adding a skill, re-sync with: rsync -a --delete .kiro/skills/ .claude/skills/   (then verify with: diff -r .kiro/skills .claude/skills)",
+    "globalAlternative": "To make these available in every project instead of just this one, copy the folders into ~/.kiro/skills and ~/.claude/skills."
+  },
+  "architectureDecision": {
+    "resolved": "Web stack (WebGL / three.js / WebXR). Confirmed 2026-09-07.",
+    "consequence": "The Unity layers (11 Unity-Technologies skills + 8 hz-unity-* skills) are now dormant. They are harmless -- their descriptions are Unity-specific so they will not activate on web work -- but they can be removed with the command below if you want a lean tree.",
+    "removeUnityLayer": "cd .kiro/skills && rm -rf new-unity-project unity-cli unity-package-management optimize-web ui ui-ugui ui-uitk shader-graph-create-custom-node urp-postprocessing physics-3d-collision optimize-text-mesh-pro hz-unity-* && cd .. && rsync -a --delete skills/ ../.claude/skills/",
+    "unityWebxrCaveat": "Recorded for posterity: Unity has no official WebXR export. It would have required the community package De-Panther/unity-webxr-export (https://github.com/De-Panther/unity-webxr-export), which Unity is not affiliated with."
+  },
+  "blockers": {
+    "node": "RESOLVED 2026-09-07. nvm v0.40.7 installed to ~/.nvm; Node v22.23.2 + npm 10.9.8 set as the default alias. Verified present in a fresh interactive zsh. This also unblocked the `skills` CLI (v1.5.24), which now works for future installs. The nvm installer appended its init block to ~/.zshrc and ~/.bashrc.",
+    "gpuAndVrBudget": "OPEN CONCERN, and the priority order inverted once the invite-link concept landed. A link shared with a partner is most often opened on a PHONE, so mobile flat mode is the primary target, desktop second, VR the enhanced mode. Three tiers, authored weakest-first. Compute-shader techniques (FFT ocean cascades, GPU-culled grass/flower fields) are desktop-WebGPU only; every zone needs an analytic fallback that holds on a mid-range phone, and that fallback is what most people will actually see. Dev machine is Intel Iris Xe integrated with 15.6G shared RAM, so it cannot preview the top tier either. See .kiro/steering/concept.md 'Platform reality'."
+  },
+  "sources": [
+    {
+      "repo": "CloudAI-X/threejs-skills",
+      "url": "https://github.com/CloudAI-X/threejs-skills",
+      "stars": 3257,
+      "layer": "Three.js / WebGL core (web stack)",
+      "skills": [
+        "threejs-fundamentals",
+        "threejs-geometry",
+        "threejs-materials",
+        "threejs-textures",
+        "threejs-lighting",
+        "threejs-loaders",
+        "threejs-shaders",
+        "threejs-animation",
+        "threejs-interaction",
+        "threejs-postprocessing"
+      ]
+    },
+    {
+      "repo": "scottstts/threejs-awesome-graphics-agent-skills",
+      "url": "https://github.com/scottstts/threejs-awesome-graphics-agent-skills",
+      "stars": 792,
+      "scope": "USER LEVEL (~/.kiro/skills, ~/.claude/skills) -- not in this repo, see alsoInstalledUserLevel above",
+      "sizeOnDisk": "68M per agent dir",
+      "layer": "Realistic virtual environments -- photoreal rendering technique for WebGL",
+      "why": "Explicitly not an API cheat sheet. It ships worked example scenes plus assets so the agent can copy proven implementations of hard realism systems rather than approximating them. This is the layer that produces believable environments; the CloudAI-X set above only covers three.js API fundamentals.",
+      "entryPoint": "threejs-skill-router -- routes a scene brief to the minimum set of these skills. Its 23 cross-references were verified to resolve.",
+      "skills": {
+        "atmosphereAndSky": ["threejs-atmosphere-aerial-perspective", "threejs-volumetric-clouds"],
+        "waterAndWeather": [
+          "threejs-spectral-ocean",
+          "threejs-water-optics",
+          "threejs-precipitation-surfaces",
+          "threejs-temporal-surfaces"
+        ],
+        "surfacesAndGeometry": [
+          "threejs-procedural-materials",
+          "threejs-procedural-geometry",
+          "threejs-procedural-fields",
+          "threejs-parallax-occlusion-mapping"
+        ],
+        "worldContent": [
+          "threejs-procedural-vegetation",
+          "threejs-procedural-architecture",
+          "threejs-procedural-planets"
+        ],
+        "lightTransportAndFinalImage": [
+          "threejs-screen-space-ambient-occlusion",
+          "threejs-shadow-systems",
+          "threejs-bloom",
+          "threejs-exposure-color-grading",
+          "threejs-image-pipeline"
+        ],
+        "motionAndEffects": [
+          "threejs-camera-direction",
+          "threejs-procedural-animation",
+          "threejs-procedural-vfx",
+          "threejs-raymarched-space-effects"
+        ],
+        "verification": ["threejs-visual-validation"],
+        "router": ["threejs-skill-router"]
+      }
+    },
+    {
+      "repo": "meta-quest/agentic-tools",
+      "url": "https://github.com/meta-quest/agentic-tools",
+      "stars": 191,
+      "license": "Apache-2.0",
+      "layer": "VR / XR -- official Meta Quest + Horizon OS (spans both stacks)",
+      "skills": {
+        "webxr": ["hz-iwsdk-webxr", "hz-store-pwa"],
+        "xrUxDesign": ["hz-immersive-designer"],
+        "unityOnQuest": [
+          "hz-unity-meta-core-sdk",
+          "hz-unity-meta-quest-ui",
+          "hz-unity-meta-mixed-reality-utility-kit",
+          "hz-unity-passthrough-camera-access",
+          "hz-unity-platform-sdk",
+          "hz-unity-placement",
+          "hz-unity-code-review",
+          "hz-unity-project-analyzer"
+        ],
+        "workflowAndTooling": [
+          "hz-new-project-creation",
+          "hz-api-upgrade",
+          "hz-xr-simulator-setup",
+          "hz-quest-verify-first",
+          "hz-vr-debug",
+          "metavr-cli"
+        ]
+      },
+      "availableButNotInstalled": {
+        "reason": "Native-Android/Kotlin, store submission, deep profiling, or narrow feature skills. Add on demand.",
+        "skills": [
+          "hz-spatial-sdk",
+          "hz-psdk-integration",
+          "hz-android-2d-porting",
+          "hz-store-submit",
+          "hz-perfetto-debug",
+          "hz-simpleperf-debug",
+          "hz-unity-fbx-import",
+          "hz-unity-tmp-resources",
+          "hz-unity-face-tracking",
+          "hz-unity-meta-movement-sdk-retargeting",
+          "portal"
+        ]
+      }
+    },
+    {
+      "repo": "Unity-Technologies/skills",
+      "url": "https://github.com/Unity-Technologies/skills",
+      "stars": 745,
+      "layer": "Unity engine -- official Unity Technologies (Unity stack)",
+      "skills": [
+        "new-unity-project",
+        "unity-cli",
+        "unity-package-management",
+        "optimize-web",
+        "ui",
+        "ui-ugui",
+        "ui-uitk",
+        "shader-graph-create-custom-node",
+        "urp-postprocessing",
+        "physics-3d-collision",
+        "optimize-text-mesh-pro"
+      ],
+      "notes": "`ui` is a router that delegates to ui-ugui or ui-uitk. `optimize-web` covers Unity 6 WebGL and WebGPU build optimisation. uGUI matters more than UI Toolkit for VR, since world-space canvases are the standard Quest UI pattern.",
+      "availableButNotInstalled": {
+        "reason": "Monetisation, multiplayer, 2D, localisation, or editor-only concerns not in scope yet.",
+        "skills": [
+          "build-live-game",
+          "implement-in-app-purchases",
+          "levelplay-unity-integration",
+          "setup-multiplayer-services",
+          "setup-vivox-voice-chat",
+          "initialize-ai-navigation",
+          "localization",
+          "optimize-audio",
+          "sprite-editor",
+          "ui-imgui",
+          "validate-urp-render-graph-renderer-feature"
+        ]
+      }
+    },
+    {
+      "repo": "majidmanzarpour/threejs-game-skills",
+      "url": "https://github.com/majidmanzarpour/threejs-game-skills",
+      "stars": 1840,
+      "layer": "Art direction, audio, asset generation, profiling, release",
+      "skills": [
+        "threejs-aaa-graphics-builder",
+        "threejs-audio-generator",
+        "threejs-debug-profiler",
+        "threejs-qa-release",
+        "threejs-3d-generator",
+        "threejs-image-generator"
+      ],
+      "notes": "threejs-3d-generator depends on the Tripo API and threejs-image-generator on Google's Gemini image API -- both are paid third-party services. Installed as options for prop and texture generation, not as required path. threejs-aaa-graphics-builder is the highest-value one here for this project: it critiques art direction and scores the result.",
+      "availableButNotInstalled": {
+        "reason": "Game-loop specific (scoring, combat, win/lose screens, endless-runner patterns). This project is an experience, not a game.",
+        "skills": ["threejs-gameplay-systems", "threejs-game-director", "threejs-game-ui-designer"]
+      }
+    },
+    {
+      "repo": "freshtechbro/claudedesignskills",
+      "url": "https://github.com/freshtechbro/claudedesignskills",
+      "stars": 854,
+      "layer": "Asset authoring pipeline (DCC -> web)",
+      "skills": ["blender-web-pipeline", "substance-3d-texturing"],
+      "notes": "Fills the prop/furniture authoring gap for the cafe and theater interiors. Repo last pushed 2025-11-20, so it is the stalest source here -- treat its version-specific claims with suspicion and verify against current Blender/Substance docs."
+    },
+    {
+      "repo": "anthropics/skills",
+      "url": "https://github.com/anthropics/skills",
+      "stars": 174997,
+      "layer": "UI/UX + verification (stack-agnostic)",
+      "skills": ["frontend-design", "webapp-testing"]
+    },
+    {
+      "repo": "greensock/gsap-skills",
+      "url": "https://github.com/greensock/gsap-skills",
+      "stars": 15016,
+      "license": "MIT",
+      "layer": "Motion -- 2D UI, HUD, camera tweens, scroll-linked 3D (web stack)",
+      "skills": ["gsap-core", "gsap-timeline", "gsap-scrolltrigger", "gsap-performance"],
+      "availableButNotInstalled": {
+        "reason": "Add on demand.",
+        "skills": ["gsap-plugins", "gsap-utils", "gsap-react", "gsap-frameworks"]
+      }
+    },
+    {
+      "repo": "dgreenheck/webgpu-claude-skill",
+      "url": "https://github.com/dgreenheck/webgpu-claude-skill",
+      "stars": 1184,
+      "layer": "WebGPU / TSL (web stack)",
+      "skills": ["webgpu-threejs-tsl"]
+    }
+  ],
+  "frameworkDecision": {
+    "resolved": "Vanilla three.js + TypeScript + Vite. NOT React Three Fiber. Decided 2026-09-07.",
+    "renderer": "WebGPURenderer with TSL shaders, relying on its automatic WebGL 2 backend fallback.",
+    "evidence": [
+      "The 24-skill graphics pack contains zero React or JSX. Verified by grep for 'from react', '<Canvas', 'useFrame', '@react-three' across all 24 skills: no matches. Every example imports 'three', 'three/webgpu', or 'three/tsl'.",
+      "That pack's stated value is its worked example implementations. Under R3F each one would have to be translated through a wrapper, which discards the reason it was installed.",
+      "hz-iwsdk-webxr (Meta Immersive Web SDK) is an ECS built directly on three.js, not React.",
+      "threejs-image-pipeline covers explicit multi-pass ordering and shared depth/normal/velocity render-target ownership. That is precisely where R3F's declarative model forces imperative escape hatches anyway.",
+      "Fewer abstraction layers is the safer choice against a 72-90Hz stereo frame budget."
+    ],
+    "whyWebGPURendererRatherThanWebGLRenderer": {
+      "point": "WebGPURenderer is backend-agnostic: it uses WebGPU when available and falls back to a WebGL 2 backend automatically (https://threejs.org/docs/pages/WebGPURenderer.html). TSL compiles to both WGSL and GLSL, so there is one shader codebase rather than two.",
+      "questConstraint": "WebGPU-on-WebXR is not implemented on Meta Quest -- it is shipping on Apple Vision Pro and experimental on Chrome for Windows/Android XR (https://github.com/mrdoob/three.js/issues/32858). So immersive mode on Quest will run the WebGL 2 backend.",
+      "consequence": "This is the two-tier plan falling out of the architecture rather than being bolted on. Compute-shader techniques (FFT ocean cascades, GPU-culled grass and flower fields) are desktop/WebGPU only. The VR tier must use the analytic alternatives the pack already ships: 'hybrid FFT plus Gerstner' and 'authored analytic waves' in threejs-spectral-ocean / threejs-water-optics, and distance-tiered plant geometry in threejs-procedural-vegetation.",
+      "implication": "Design each zone against the VR tier first. A scene authored only against the WebGPU tier will not degrade gracefully."
+    },
+    "whatR3fWouldHaveWon": "Declarative scene graph, the drei helper ecosystem, and @react-three/xr's controller/hand/teleport abstractions. Real advantages, but not worth forfeiting the example library that makes the photoreal target reachable.",
+    "notInstalled": {
+      "repo": "enzed/r3f-skills",
+      "url": "https://github.com/enzed/r3f-skills",
+      "reason": "Superseded by this decision. Install only if the project later migrates to React Three Fiber."
+    },
+    "nowCentralNotPeripheral": "webgpu-threejs-tsl was installed earlier as a forward-looking extra. Under this decision it is a core skill, since TSL is the shader language for the whole project."
+  }
+}

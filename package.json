@@ -1,0 +1,32 @@
+{
+  "name": "pooklet",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "A world built by one person, walked by two.",
+  "scripts": {
+    "dev": "concurrently --kill-others --names \"worker,app\" --prefix-colors \"magenta,cyan\" \"wrangler dev --port 8787\" \"vite --port 5173\"",
+    "dev:app": "vite --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "verify:room": "node scripts/verify-room.mjs",
+    "verify:smoke": "node scripts/smoke.mjs",
+    "diagnose": "node scripts/diagnose.mjs",
+    "verify": "npm run typecheck && npm run verify:room && npm run verify:smoke"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260908.1",
+    "@types/three": "0.185.4",
+    "concurrently": "^10.0.5",
+    "playwright-core": "^1.63.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "wrangler": "4.129.1"
+  }
+}
